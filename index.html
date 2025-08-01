@@ -27,7 +27,6 @@
             width: 100%;
         }
 
-        /* MODIFICATION: Styles for the new upload placeholder */
         #upload-placeholder {
             border: 3px dashed #ccc;
             border-radius: 15px;
@@ -51,7 +50,6 @@
             color: #007bff;
         }
 
-        /* MODIFICATION: Hide the default file input */
         #image-input {
             display: none;
         }
@@ -126,6 +124,15 @@
             background-color: #0056b3;
         }
 
+        /* MODIFICATION: Style for the reset button */
+        .btn.btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn.btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
         input[type="range"] {
             flex-grow: 1;
             cursor: pointer;
@@ -136,7 +143,6 @@
 <body>
     <div class="main-content">
         <h1>Interactive SVG Animation Tool</h1>
-        <!-- MODIFICATION: This is the new attractive upload area -->
         <div id="upload-placeholder">
             <div class="upload-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
@@ -166,6 +172,8 @@
                 <div class="control-group">
                     <button id="play-pause-btn" class="btn">Play</button>
                     <a id="download-link" class="btn">Download SVG</a>
+                    <!-- MODIFICATION: This button will reset the tool -->
+                    <button id="reset-btn" class="btn btn-secondary">Upload Another</button>
                 </div>
                 <div class="control-group">
                     <label for="timeline">Timeline:</label>
@@ -182,7 +190,7 @@
     <script>
         // DOM Elements
         const imageInput = document.getElementById('image-input');
-        const uploadPlaceholder = document.getElementById('upload-placeholder'); // MODIFICATION: Get placeholder
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
         const resultsDiv = document.getElementById('results');
         const imageContainer = document.getElementById('image-container');
         const svgContainer = document.getElementById('svg-container');
@@ -191,6 +199,8 @@
         const downloadLink = document.getElementById('download-link');
         const timeline = document.getElementById('timeline');
         const speedControl = document.getElementById('speed-control');
+        // MODIFICATION: Get the new reset button
+        const resetBtn = document.getElementById('reset-btn');
 
         // Animation State
         let isPlaying = false;
@@ -200,16 +210,47 @@
         let currentProgress = 0; // Range 0 to 1
         let lastTimestamp = 0;
 
-        // MODIFICATION: Trigger file input when the placeholder is clicked
+        // MODIFICATION: Function to reset the entire application to its initial state
+        function resetApp() {
+            // Stop any current animation
+            stopAnimation();
+
+            // Hide results and show the upload placeholder
+            resultsDiv.style.display = 'none';
+            uploadPlaceholder.style.display = 'block';
+
+            // Clear all containers
+            imageContainer.innerHTML = '';
+            svgContainer.innerHTML = '';
+            animationContainer.innerHTML = '';
+
+            // Reset animation state variables
+            pathData = [];
+            totalAnimationLength = 0;
+            currentProgress = 0;
+            lastTimestamp = 0;
+
+            // Reset controls to their default state
+            playPauseBtn.textContent = 'Play';
+            timeline.value = 0;
+            downloadLink.href = '#';
+            downloadLink.removeAttribute('download');
+
+            // Reset the file input so the 'change' event fires even if the same file is selected
+            imageInput.value = '';
+        }
+
         uploadPlaceholder.addEventListener('click', () => {
             imageInput.click();
         });
+
+        // MODIFICATION: Add click event listener to the new reset button
+        resetBtn.addEventListener('click', resetApp);
 
         imageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (!file) return;
 
-            // MODIFICATION: Hide placeholder and show results
             uploadPlaceholder.style.display = 'none';
             resultsDiv.style.display = 'block';
 
